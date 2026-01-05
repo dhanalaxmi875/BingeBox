@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Create an axios instance with default config
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://bingebox-v1.onrender.com/api',
   withCredentials: true,
   timeout: 10000, // 10 seconds timeout
   headers: {
@@ -126,11 +126,11 @@ export const useAuthStore = create((set) => ({
     try {
       console.log('Fetching user data...');
       const response = await api.get('/api/fetch-user');
-      
+
       console.log('User data fetched successfully:', response.data);
-      set({ 
+      set({
         user: response.data.user,
-        fetchingUser: false 
+        fetchingUser: false
       });
       return response.data.user;
     } catch (error) {
@@ -139,37 +139,37 @@ export const useAuthStore = create((set) => ({
         status: error.response?.status,
         data: error.response?.data
       });
-      
+
       // Clear user data on 401 Unauthorized
       if (error.response?.status === 401) {
         console.log('User not authenticated, clearing user data');
-        set({ 
+        set({
           user: null,
-          fetchingUser: false 
+          fetchingUser: false
         });
       } else {
-        set({ 
+        set({
           error: error.response?.data?.message || 'Failed to fetch user data',
-          fetchingUser: false 
+          fetchingUser: false
         });
       }
-      
+
       return null;
     }
   },
 
   logout: async () => {
     set({ isLoading: true });
-    
+
     try {
       await api.post('/api/logout');
       set({ user: null, isLoading: false });
       return { success: true };
     } catch (error) {
       console.error('Logout error:', error);
-      set({ 
+      set({
         isLoading: false,
-        error: error.response?.data?.message || 'Error logging out' 
+        error: error.response?.data?.message || 'Error logging out'
       });
       return { success: false, error: error.message };
     }
